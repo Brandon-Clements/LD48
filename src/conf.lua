@@ -2,8 +2,8 @@ function love.conf(t)
   t.window.title = "LD48"
   t.window.icon = nil
 
-  t.window.width = 30 * 32
-  t.window.height = 30 * 16
+  t.window.width = 30 * 20
+  t.window.height = 30 * 30
   t.modules.joystick = false
 
   --Uncommon

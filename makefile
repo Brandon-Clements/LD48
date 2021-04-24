@@ -6,8 +6,8 @@ love:
 web: love
 	echo "game" | npx love.js build/game.love build/game
 
-web-run:
+web-run: web
 	cd build/game;python3 -m http.server
 
-web-pub:
+web-pub: web
 	cp -r build/game/* ../LD48-pub
