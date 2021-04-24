@@ -6,7 +6,7 @@ language: C
 addons:
   apt:
     packages:
-      - lua
+      - lua5.3
       - npm
 
 before_script:
