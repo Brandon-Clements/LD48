@@ -31,11 +31,10 @@ end
 
 function loadLevel(levelNum)
   level = levels[levelNum]:new()
+  for k, v in pairs(level) do
+    print(k,v)
+  end
   world = bump.newWorld()
-  player.x = level.startX
-  player.y = level.startY
-  world:add(player, player.x, player.y, player.w, player.h)
-
   for k,v in ipairs(level.tilemap) do
     local o = {}
     if v == 1 then
@@ -44,6 +43,10 @@ function loadLevel(levelNum)
       o = Goal()
     elseif v == DeathBox.ITEMNUM then
       o = DeathBox()
+    elseif v == 3 then
+      o = player
+      player.x = ((k - 1) % 20) * 32
+      player.y = math.floor((k - 1) / 20) * 32
     end
     world:add(o, ((k - 1) % 20) * 32, math.floor((k - 1) / 20) * 32, 32, 32)
   end
@@ -53,7 +56,6 @@ function loadLevel(levelNum)
   else
     --
   end
-
 end
 
 function love.draw()
