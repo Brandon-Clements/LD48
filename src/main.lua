@@ -5,6 +5,8 @@ local level = {}--require "levels/1"
 local timer = love.timer.getTime
 local Wall = require "objects/wall"
 local Goal = require "objects/goal"
+local DeathBox = require "objects/deathbox"
+local WaterLine = require "objects/waterline"
 
 player = {}
 player.x = 5
@@ -16,32 +18,49 @@ player.onFloor = flase
 player.recentlyOnFloor = false
 player.lastOnFloor = 0.1
 
+message = ""
+messageKeep = false
+messageTime = 0
+
 function love.load()
   playerImage = love.graphics.newImage("res/Player.png")
+  waterImage = love.graphics.newImage("res/water.png")
+  belowWaterImage = love.graphics.newImage("res/below-water.png")
   loadLevel(1)
 end
 
 function loadLevel(levelNum)
-  level = levels[levelNum]
+  level = levels[levelNum]:new()
   world = bump.newWorld()
   player.x = level.startX
   player.y = level.startY
   world:add(player, player.x, player.y, player.w, player.h)
 
   for k,v in ipairs(level.tilemap) do
+    local o = {}
     if v == 1 then
-      local o = Wall()
-      world:add(o, ((k - 1) % 20) * 32, math.floor((k - 1) / 20) * 32, 32, 32)
+      o = Wall()
     elseif v == 2 then
-      local o = Goal()
-      world:add(o, ((k - 1) % 20) * 32, math.floor((k - 1) / 20) * 32, 32, 32)
+      o = Goal()
+    elseif v == DeathBox.ITEMNUM then
+      o = DeathBox()
     end
+    world:add(o, ((k - 1) % 20) * 32, math.floor((k - 1) / 20) * 32, 32, 32)
   end
+  player.isDead = false
+  if level.waterLine then
+    world:add(level.waterLine, 0, level.waterLine.y, 640, 32)
+  else
+    --
+  end
+
 end
 
 function love.draw()
-  love.graphics.setBackgroundColor(0, 0, 0, 1)
+  love.graphics.setBackgroundColor(0.02, 0.03, 0.04, 1)
   love.graphics.draw(playerImage, player.x, player.y)
+
+  love.graphics.print(message, 100, 100)
   for k, v in ipairs(level.tilemap) do
     if v == 1 then
       love.graphics.setColor(1, 1, 1, 1)
@@ -51,22 +70,33 @@ function love.draw()
       love.graphics.rectangle("fill", ((k-1) % 20) * 32, math.floor((k-1)/20) * 32, 32, 32)
     end
   end
+  if level.waterLine then
+    love.graphics.draw(waterImage, 0, level.waterLine.y, 0, 3, 3)--, ox, oy, kx, ky)
+    love.graphics.draw(belowWaterImage, 0, level.waterLine.y + 6)
+  end
+
 end
 
 
 function love.update(dt)
   checkFloor()
+
+  if timer() - messageTime > 2 and messageKeep == false then
+    message = ""
+    if player.isDead then
+      print("Reloading world")
+    end
+  end
+
   if player.dy < 10 then
     player.dy = player.dy + 1
   end
 
   if love.keyboard.isDown("w") or love.keyboard.isDown("up") then
     if player.onFloor then
-      print("Floor")
-      player.dy =  -10
+      player.dy = - 10
     elseif player.recentlyOnFloor then
-      print("Recently2")
-      player.dy = -10
+      player.dy = - 10
     end
   else
     player.recentlyOnFloor = false
@@ -81,15 +111,24 @@ function love.update(dt)
   end
 
   player.x, player.y, cols, len = world:move(player, player.x, player.y, collFilter)
+  if level.waterLine then
+    level.waterLine.x, level.waterLine.y = world:move(level.waterLine, 0, level.waterLine.y + level.waterLine.dy, noColl)
+  end
   for i=1,len do
     if cols[i].other.isGoal then
       loadLevel(level.next)
+    elseif cols[i].other.isDeathBox or cols[i].other.isWaterLine then
+      player.isDead = true
+      messageKeep = false
+      message = "You Died"
+      messageTime = timer()
+      loadLevel(1)
     end
   end
 end
 
 function checkFloor()
-  local cx, cy = world:check(player, player.x, player.y+1)
+  local cx, cy = world:check(player, player.x, player.y+1, collFilter)
   if cy == player.y then
     player.onFloor = true
     player.lastOnFloor = timer()
@@ -106,7 +145,12 @@ end
 
 function collFilter(this, other)
   if other.isWall then return 'slide'
-  elseif other.isGoal then
-     return 'cross'
+  elseif other.isGoal then return 'cross'
+  elseif other.isDeathBox then return 'cross'
+  elseif other.isWaterLine then return 'cross'
   end
+end
+
+function noColl(this, other)
+  return 'cross'
 end

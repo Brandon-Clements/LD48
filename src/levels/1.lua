@@ -1,9 +1,12 @@
-local level = {}
+local WaterLine = require "objects/waterline"
 
-level.startX = 55
-level.startY = 555
+local Level = {}
+Level.__index = Level
 
-level.tilemap = {
+Level.startX = 55
+Level.startY = 555
+
+Level.tilemap = {
                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -25,12 +28,30 @@ level.tilemap = {
                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                 0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,
-                 0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0
+                 0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
                 }
 
-level.next = 2
+Level.next = 2
 
-return level
+
+
+function Level:new(o)
+  local o = o or {}
+  o.waterLine = WaterLine()
+
+
+  o.waterLine.y = 32 * 23
+  o.waterLine.dy = - .1
+  return setmetatable(o, Level)
+end
+
+
+
+
+
+return setmetatable(Level, {__call = Level.new})
