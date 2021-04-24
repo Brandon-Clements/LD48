@@ -3,7 +3,7 @@ function love.conf(t)
   t.window.icon = nil
 
   t.window.width = 30 * 20
-  t.window.height = 30 * 30
+  t.window.height = 30 * 25
   t.modules.joystick = false
 
   --Uncommon
