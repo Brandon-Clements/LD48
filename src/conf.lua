@@ -1,5 +1,5 @@
 function love.conf(t)
-  t.window.title = "LD47"
+  t.window.title = "LD48"
   t.window.icon = nil
 
   t.window.width = 30 * 32

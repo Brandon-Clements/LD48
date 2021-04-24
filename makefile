@@ -8,3 +8,6 @@ web: love
 
 web-run:
 	cd build/game;python3 -m http.server
+
+web-pub:
+	cp -r build/game/* ../LD48-pub

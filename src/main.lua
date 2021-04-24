@@ -2,7 +2,6 @@ local bump = require "external/bump"
 local world = bump.newWorld()
 
 function love.load()
-  astring = "Game"
 end
 
 function love.draw()
