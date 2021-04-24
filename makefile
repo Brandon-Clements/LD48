@@ -4,8 +4,13 @@ love:
 	mkdir -p build
 	cd src; zip -9 -r ../build/game.love .
 
+love-run: love
+	love build/game.love --console
+
 web: love
-	echo "game" | npx love.js build/game.love build/game
+	echo "New Babel" | npx love.js build/game.love build/game
+	cp web-theme/bg.png build/game/theme/bg.png
+	cp web-theme/love.css build/game/theme/love.css
 
 web-run: web
 	cd build/game;python3 -m http.server
