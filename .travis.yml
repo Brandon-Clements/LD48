@@ -1,3 +1,5 @@
+# travis.yml
+
 os: linux
 language: C
 
@@ -11,13 +13,13 @@ before_script:
   - npm i love.js
 
 script: "make web"
- 
- 
- deploy:
-   provider: pages
-   skip_cleanup: true
-   github_token: $GITHUB_TOKEN
-   keep_history: true
-   on:
-     branch: LD48Compo
-   local_dir: "build/game"
+
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  on:
+    branch: LD48Compo
+  local_dir: "build/game"
