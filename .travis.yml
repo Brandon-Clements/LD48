@@ -21,5 +21,6 @@ deploy:
   github_token: $GITHUB_TOKEN
   keep_history: true
   on:
-    branch: LD48Compo
+    branch: main
   local_dir: "build/game"
+  target_branch: LD48Compo
