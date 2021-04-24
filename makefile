@@ -1,6 +1,7 @@
 all: web
 
 love:
+	mkdir -p build
 	cd src; zip -9 -r ../build/game.love .
 
 web: love
